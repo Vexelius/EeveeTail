@@ -180,13 +180,13 @@ void loop(){
   delay(500);
   */
 int i, j;
-Serial.println("Walking test will start in 3...");
+Serial.println("The test will start in 3...");
 delay(1000);
-Serial.println("Walking test will start in 2...");
+Serial.println("The test will start in 2...");
 delay(1000);
-Serial.println("Walking test will start in 1...");
+Serial.println("The test will start in 1...");
 delay(1000);
-Serial.println("Walking test in process!");
+Serial.println("Test in process!");
 
 for (i = 0; i < 7; i++)
 {
