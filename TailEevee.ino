@@ -214,6 +214,7 @@ for (j = 0; j < 7; j++)
   Serial.println(" | ");
 }
 
+//Identify the minimum value
 debugMinAx = debugAx[0];
 debugMinAy = debugAy[0];
 debugMinAz = debugAz[0];
@@ -222,9 +223,55 @@ for (i = 1; i < 7; i++)
 {
   if(debugAx[i] < debugMinAx)
   debugMinAx = debugAx[i];
+  if(debugAy[i] < debugMinAy)
+  debugMinAy = debugAy[i];
+  if(debugAz[i] < debugMinAz)
+  debugMinAz = debugAz[i];
 }
+Serial.println("*------------------*");
 Serial.print("Minimum value for X = ");
 Serial.println(debugMinAx);
+Serial.print("Minimum value for Y = ");
+Serial.println(debugMinAy);
+Serial.print("Minimum value for Z = ");
+Serial.println(debugMinAz);
+
+
+//Identify the maximum value
+debugMaxAx = debugAx[0];
+debugMaxAy = debugAy[0];
+debugMaxAz = debugAz[0];
+
+for (i = 1; i < 7; i++)
+{
+  if(debugAx[i] > debugMaxAx)
+  debugMaxAx = debugAx[i];
+  if(debugAy[i] > debugMaxAy)
+  debugMaxAy = debugAy[i];
+  if(debugAz[i] > debugMaxAz)
+  debugMaxAz = debugAz[i];
+}
+Serial.println("*------------------*");
+Serial.print("Maximum value for X = ");
+Serial.println(debugMaxAx);
+Serial.print("Maximum value for Y = ");
+Serial.println(debugMaxAy);
+Serial.print("Maximum value for Z = ");
+Serial.println(debugMaxAz);
+Serial.println("*------------------*");
+
+//Prompt to restart the test
+Serial.println("Press S to reStart the test");
+while (true)
+  {
+        if (Serial.available())
+        {
+            char inByte = Serial.read();
+            
+            if (inByte == 's' || inByte == 'S')
+                break;
+        }
+    }
 
 
   //Fun Stuff!    
