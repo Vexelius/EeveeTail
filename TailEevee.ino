@@ -133,7 +133,7 @@ void setup(){
   accel.setInterrupt( ADXL345_INT_INACTIVITY_BIT, 1);
 
 
-  delay(250);
+  delay(5000); //This will give you enough time to get ready
   calibrateOffsets();
 
 
@@ -181,11 +181,11 @@ void loop(){
   */
 int i, j;
 Serial.println("Walking test will start in 3...");
-delay(500);
+delay(1000);
 Serial.println("Walking test will start in 2...");
-delay(500);
+delay(1000);
 Serial.println("Walking test will start in 1...");
-delay(500);
+delay(1000);
 Serial.println("Walking test in process!");
 
 for (i = 0; i < 7; i++)
