@@ -6,7 +6,6 @@
 
 
 ADXL345 accel; //variable accel is an instance of the ADXL345 library
-char calOption = 'n';
 int xAxisMov;
 int yAxisMov;
 
@@ -22,6 +21,7 @@ double debugMinAz;
 double debugMaxAx;
 double debugMaxAy;
 double debugMaxAz;
+
 
 double gatherAverage(double * average_x, double * average_y, double * average_z)
 {
@@ -144,20 +144,61 @@ void setup(){
 }
 
 void loop(){
-  
-  //Boring accelerometer stuff  
-  //int x,y,z;  
-  //accel.readXYZ(&x, &y, &z); //read the accelerometer values and store them in variables  x,y,z
-  // Output x,y,z values 
-  
-  /*Serial.print("values of X , Y , Z: ");
-  Serial.print(x);
-  Serial.print(" , ");
-  Serial.print(y);
-  Serial.print(" , ");
-  Serial.println(z);
-  
-  
+  int i,j;
+  //First, get samples
+  for (i = 0; i < 7; i++)
+  {
+    double xyz[3];
+    accel.getAcceleration(xyz);
+    debugAx[i] = xyz[0];
+    debugAy[i] = xyz[1];
+    debugAz[i] = xyz[2];
+    delay(100);
+  }
+  //Then, get Min and Max values
+  //Identify the minimum value
+  debugMinAx = debugAx[0];
+  debugMinAy = debugAy[0];
+  debugMinAz = debugAz[0];
+
+  for (i = 1; i < 7; i++)
+  {
+  if(debugAx[i] < debugMinAx)
+  debugMinAx = debugAx[i];
+  if(debugAy[i] < debugMinAy)
+  debugMinAy = debugAy[i];
+  if(debugAz[i] < debugMinAz)
+  debugMinAz = debugAz[i];
+  }
+
+  //Identify the maximum value
+  debugMaxAx = debugAx[0];
+  debugMaxAy = debugAy[0];
+  debugMaxAz = debugAz[0];
+
+  for (i = 1; i < 7; i++)
+  {
+  if(debugAx[i] > debugMaxAx)
+  debugMaxAx = debugAx[i];
+  if(debugAy[i] > debugMaxAy)
+  debugMaxAy = debugAy[i];
+  if(debugAz[i] > debugMaxAz)
+  debugMaxAz = debugAz[i];
+  }
+
+  //Then, identify the movement
+  if((debugMinAy >= 0.85)&&(debugMaxAy <= 0.95))
+  {
+    Serial.println("STATUS: STILL");
+  }
+  else
+    {
+    Serial.print("STATUS: NOT STILL! Min: ");
+    Serial.print(debugMinAy);
+    Serial.print(" Max: ");
+    Serial.println(debugMaxAy);
+  }
+  /*
   double xyz[3];
   double ax,ay,az;
   accel.getAcceleration(xyz);
@@ -179,6 +220,8 @@ void loop(){
   
   delay(500);
   */
+
+  /*
 int i, j;
 Serial.println("The test will start in 3...");
 delay(1000);
@@ -273,7 +316,7 @@ while (true)
         }
     }
 
-
+*/
   //Fun Stuff!    
   //read interrupts source and look for triggerd actions
   
