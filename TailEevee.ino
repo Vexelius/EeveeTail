@@ -195,7 +195,7 @@ for (i = 0; i < 7; i++)
   debugAx[i] = xyz[0];
   debugAy[i] = xyz[1];
   debugAz[i] = xyz[2];
-  delay(500);
+  delay(200);
 }
 
 Serial.println("Test finished. Showing data");
