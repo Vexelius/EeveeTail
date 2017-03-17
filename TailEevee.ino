@@ -21,6 +21,12 @@ double debugMinAz;
 double debugMaxAx;
 double debugMaxAy;
 double debugMaxAz;
+double accX = 0;
+double accY = 0;
+double accZ = 0;
+double avgX;
+double avgY;
+double avgZ;
 
 
 double gatherAverage(double * average_x, double * average_y, double * average_z)
@@ -104,7 +110,7 @@ void setup(){
  
   //look of Taps on the following axes - 1 == on; 0 == off
   accel.setTapDetectionOnX(0);
-  accel.setTapDetectionOnY(1);
+  accel.setTapDetectionOnY(0);
   accel.setTapDetectionOnZ(0);
  
   //Set the sensitivity for Tap / Double Tap detection (0-255)
@@ -155,6 +161,46 @@ void loop(){
     debugAz[i] = xyz[2];
     delay(100);
   }
+
+  //Then, get an average value
+  accX = 0;
+  accY = 0;
+  accZ = 0;
+
+  for (i = 0; i < 7; i++)
+  {
+  accX = accX + debugAx[i];
+  accY = accY + debugAy[i];
+  accZ = accZ + debugAz[i];
+  }
+
+  avgX = accX/7;
+  avgY = accY/7;
+  avgZ = accZ/7;
+
+  //And try to identify the movement
+  if(((avgX >= -0.12)&&(avgX <= -0.08))&&
+  ((avgY >= 0.9)&&(avgY <= 0.95))&&
+  ((avgZ >= 0.89)&&(avgZ <= 1.2)))
+  {
+    Serial.print("[ STATUS: STILL ] ::");
+  }
+ 
+  if(((avgX >= -0.12)&&(avgX <= -0.06))&&
+  ((avgY >= 0.83)&&(avgY <= 0.91))&&
+  ((avgZ >= 0.65)&&(avgZ <= 0.83)))
+  {
+    Serial.print("[ STATUS: SITTING DOWN ] ::");
+  }
+
+  Serial.print(" [ X = ");
+  Serial.print(avgX);
+  Serial.print(" | Y = ");
+  Serial.print(avgY);
+  Serial.print(" | Z = ");
+  Serial.print(avgZ);
+  Serial.println(" ]");
+  /*
   //Then, get Min and Max values
   //Identify the minimum value
   debugMinAx = debugAx[0];
@@ -187,17 +233,21 @@ void loop(){
   }
 
   //Then, identify the movement
-  if((debugMinAy >= 0.85)&&(debugMaxAy <= 0.95))
+  if(((debugMinAy >= 0.85)&&(debugMaxAy <= 0.95))&&
+  ((debugMinAz >= 0.75)&&(debugMaxAz <= 0.95)))
   {
     Serial.println("STATUS: STILL");
   }
   else
     {
     Serial.print("STATUS: NOT STILL! Min: ");
-    Serial.print(debugMinAy);
+    Serial.print(debugMinAz);
     Serial.print(" Max: ");
-    Serial.println(debugMaxAy);
+    Serial.println(debugMaxAz);
   }
+  */
+
+  
   /*
   double xyz[3];
   double ax,ay,az;
@@ -330,17 +380,6 @@ while (true)
     //add code here to do when freefall is sensed
   } 
   
-  //inactivity
-  if(accel.triggered(interrupts, ADXL345_INACTIVITY)){
-    Serial.println("inactivity");
-     //add code here to do when inactivity is sensed
-  }
-  
-  //activity
-  if(accel.triggered(interrupts, ADXL345_ACTIVITY)){
-    Serial.println("activity"); 
-     //add code here to do when activity is sensed
-  }
   
   //double tap
   if(accel.triggered(interrupts, ADXL345_DOUBLE_TAP)){
