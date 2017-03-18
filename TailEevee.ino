@@ -1,5 +1,5 @@
 #include <Wire.h>
-#include <Servo.h>
+#include <VarSpeedServo.h>
 #include <ADXL345.h>
 #include <math.h>
 #define SAMPLES 15
@@ -9,8 +9,8 @@ ADXL345 accel; //variable accel is an instance of the ADXL345 library
 int xAxisMov;
 int yAxisMov;
 
-Servo tailBone1;
-Servo tailBone2;
+VarSpeedServo tailBone1;
+VarSpeedServo tailBone2;
 
 double debugAx[7];
 double debugAy[7];
@@ -27,6 +27,9 @@ double accZ = 0;
 double avgX;
 double avgY;
 double avgZ;
+
+boolean tailBone1Ctrl = true;  //True: Up     | False: Down     ::      Up = 135  | Down = 45
+boolean tailBone2Ctrl = true;  //True: Right  | False: Left     ::      Right = 0 | Left = 180
 
 
 double gatherAverage(double * average_x, double * average_y, double * average_z)
@@ -139,7 +142,7 @@ void setup(){
   accel.setInterrupt( ADXL345_INT_INACTIVITY_BIT, 1);
 
 
-  delay(5000); //This will give you enough time to get ready
+  delay(3000); //This will give you enough time to get ready
   calibrateOffsets();
 
 
@@ -147,9 +150,16 @@ void setup(){
   delay(250);
   tailBone1.attach(11);
   tailBone2.attach(10);
+
+  // TailBone1 speed: 15-25
+  // TailBone2 speed: 50 
+
+  tailBone1.write(90, 25, true);
+  tailBone2.write(90, 50, true);
+  delay(250);
 }
 
-void loop(){
+void loop(){ 
   int i,j;
   //First, get samples
   for (i = 0; i < 7; i++)
@@ -184,6 +194,26 @@ void loop(){
   ((avgZ >= 0.89)&&(avgZ <= 1.2)))
   {
     Serial.print("[ STATUS: STILL ] ::");
+    if(tailBone1Ctrl == true)
+      {
+      tailBone1.write(135, 25, false);
+      tailBone1Ctrl = !tailBone1Ctrl;
+      }
+    else
+      {
+      tailBone1.write(45, 25, false);
+      tailBone1Ctrl = !tailBone1Ctrl;
+      }
+    if(tailBone2Ctrl == true)
+      {
+      tailBone2.write(0, 50, false);
+      tailBone2Ctrl = !tailBone2Ctrl;
+      }
+    else
+      {
+      tailBone2.write(180, 50, false);
+      tailBone2Ctrl = !tailBone2Ctrl;
+      }
   }
  
   if(((avgX >= -0.12)&&(avgX <= -0.06))&&
@@ -191,6 +221,8 @@ void loop(){
   ((avgZ >= 0.65)&&(avgZ <= 0.83)))
   {
     Serial.print("[ STATUS: SITTING DOWN ] ::");
+    tailBone1.write(135, 50, false);
+    tailBone2.write(90, 50, false);
   }
 
   Serial.print(" [ X = ");
