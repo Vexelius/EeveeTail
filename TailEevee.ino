@@ -195,6 +195,8 @@ void loop(){
   avgY = accY/7;
   avgZ = accZ/7;
 
+  //When running for the first time, load the 
+  //obtained values into prevX, prevY and PrevZ
   if(heurXYZ == false)
   {
     prevX = avgX;
@@ -204,24 +206,60 @@ void loop(){
     heurXYZ = true;
   }
 
+  //Get the difference between previous and current values
   diffX = avgX - prevX;
   diffY = avgY - prevY;
   diffZ = avgZ - prevZ;
 
-  Serial.print(" [ DiffX = ");
+  //Print debug info
+  Serial.print(" ( DiffX = ");
   Serial.print(diffX);
-  Serial.print(" | DiffY = ");
+  Serial.print(" + DiffY = ");
   Serial.print(diffY);
-  Serial.print(" | DiffZ = ");
+  Serial.print(" + DiffZ = ");
   Serial.print(diffZ);
-  Serial.println(" ]");
+  Serial.println(" )");
 
    prevX = avgX;
    prevY = avgY;
    prevZ = avgZ;
 
-  //And try to identify the movement
+  Serial.print(" [ X = ");
+  Serial.print(avgX);
+  Serial.print(" | Y = ");
+  Serial.print(avgY);
+  Serial.print(" | Z = ");
+  Serial.print(avgZ);
+  Serial.println(" ]");
 
+  //And try to identify the movement
+  if(heurXYZ==true)
+  {
+    if(
+      ((diffX>=-0.1)&&(diffX<=0.1))
+    &&((diffY>=-0.11)&&(diffY<=0.11))
+    &&((diffZ>=-0.05)&&(diffZ<=0.05))
+    )
+    {
+      Serial.println("< STATUS: STILL >");
+      tailBone2.write(0, 50, true);
+      tailBone2.write(180, 50, true);
+      if((avgZ>=0.85)&&(avgZ<=0.97))
+      {
+        Serial.println("< STATUS: STANDING >");
+      }
+      if((avgZ>=0.55)&&(avgZ<=0.78))
+      {
+        tailBone2.write(90, 50, false);
+        tailBone1.write(135, 45, true);
+        Serial.println("< STATUS: SITTING >");
+      }
+    }
+    else
+    {
+      Serial.println("< STATUS: MOVE >");
+    }
+  }
   /*
   if(((avgX >= -0.12)&&(avgX <= -0.08))&&
   ((avgY >= 0.9)&&(avgY <= 0.95))&&
@@ -259,13 +297,7 @@ void loop(){
     tailBone2.write(90, 50, false);
   }*/
 
-  Serial.print(" [ X = ");
-  Serial.print(avgX);
-  Serial.print(" | Y = ");
-  Serial.print(avgY);
-  Serial.print(" | Z = ");
-  Serial.print(avgZ);
-  Serial.println(" ]");
+
   /*
   //Then, get Min and Max values
   //Identify the minimum value
