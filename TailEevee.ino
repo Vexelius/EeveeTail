@@ -27,9 +27,16 @@ double accZ = 0;
 double avgX;
 double avgY;
 double avgZ;
+double prevX = 0;
+double prevY = 0;
+double prevZ = 0;
+double diffX = 0;
+double diffY = 0;
+double diffZ = 0;
 
 boolean tailBone1Ctrl = true;  //True: Up     | False: Down     ::      Up = 135  | Down = 45
 boolean tailBone2Ctrl = true;  //True: Right  | False: Left     ::      Right = 0 | Left = 180
+boolean heurXYZ = false;
 
 
 double gatherAverage(double * average_x, double * average_y, double * average_z)
@@ -188,7 +195,34 @@ void loop(){
   avgY = accY/7;
   avgZ = accZ/7;
 
+  if(heurXYZ == false)
+  {
+    prevX = avgX;
+    prevY = avgY;
+    prevZ = avgZ;
+
+    heurXYZ = true;
+  }
+
+  diffX = avgX - prevX;
+  diffY = avgY - prevY;
+  diffZ = avgZ - prevZ;
+
+  Serial.print(" [ DiffX = ");
+  Serial.print(diffX);
+  Serial.print(" | DiffY = ");
+  Serial.print(diffY);
+  Serial.print(" | DiffZ = ");
+  Serial.print(diffZ);
+  Serial.println(" ]");
+
+   prevX = avgX;
+   prevY = avgY;
+   prevZ = avgZ;
+
   //And try to identify the movement
+
+  /*
   if(((avgX >= -0.12)&&(avgX <= -0.08))&&
   ((avgY >= 0.9)&&(avgY <= 0.95))&&
   ((avgZ >= 0.89)&&(avgZ <= 1.2)))
@@ -223,7 +257,7 @@ void loop(){
     Serial.print("[ STATUS: SITTING DOWN ] ::");
     tailBone1.write(135, 50, false);
     tailBone2.write(90, 50, false);
-  }
+  }*/
 
   Serial.print(" [ X = ");
   Serial.print(avgX);
