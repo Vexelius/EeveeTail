@@ -236,13 +236,23 @@ void loop(){
   if(heurXYZ==true)
   {
     if(
-      ((diffX>=-0.05)&&(diffX<=0.05))
-    &&((diffY>=-0.05)&&(diffY<=0.05))
+      ((diffX>=-0.1)&&(diffX<=0.11))
+    &&((diffY>=-0.1)&&(diffY<=0.11))
     &&((diffZ>=-0.05)&&(diffZ<=0.05))
     )
     {
       tailBone1.write(90, 45, false);
-      tailBone2.write(xAxisMov, 50, false);
+      if(tailBone2Ctrl == true)
+      {
+      xAxisMov = 0;
+      }
+      if(tailBone2Ctrl == false)
+      {
+      xAxisMov = 180;
+      }
+      tailBone2.write(xAxisMov, 50, true);
+      tailBone2Ctrl = !tailBone2Ctrl;
+      /*
       if((xAxisMov > 0) && (xAxisMov < 180))
       {
         if(tailBone2Ctrl == true)
@@ -267,7 +277,8 @@ void loop(){
           tailBone2Ctrl = true;
           xAxisMov = 160;
         }
-      }
+      }/*
+      
       /*
       Serial.println("< STATUS: STILL >");
       
