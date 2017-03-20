@@ -176,7 +176,7 @@ void loop(){
     debugAx[i] = xyz[0];
     debugAy[i] = xyz[1];
     debugAz[i] = xyz[2];
-    delay(100);
+    delay(25);
   }
 
   //Then, get an average value
@@ -300,7 +300,7 @@ void loop(){
     
     else
     {
-      tailBone1.write(135, 45, true);
+      tailBone1.write(135, 45, false);
       tailBone2.write(90, 50, true);
       Serial.println("< STATUS: MOVE >");
     }
