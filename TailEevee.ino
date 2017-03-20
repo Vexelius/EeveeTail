@@ -241,7 +241,35 @@ void loop(){
     &&((diffZ>=-0.05)&&(diffZ<=0.05))
     )
     {
-      tailBone1.write(90, 45, false);
+      Serial.println("< STATUS: STILL >");
+
+      
+      if((avgZ>=0.92)&&(avgZ<=1.10))
+      {
+        Serial.println("< STATUS: STANDING >");
+        tailBone1.write(90, 45, false);
+        if(tailBone2Ctrl == true)
+        {
+          xAxisMov = 0;
+        }
+        if(tailBone2Ctrl == false)
+        {
+          xAxisMov = 180;
+        }
+        tailBone2.write(xAxisMov, 50, true);
+        tailBone2Ctrl = !tailBone2Ctrl;
+      }
+      if((avgZ>=0.55)&&(avgZ<=0.91))
+      {
+        Serial.println("< STATUS: SITTING >");
+        tailBone1.write(135, 45, false);
+        tailBone2.write(90, 50, true);
+      }
+    }
+    
+    else
+    {
+      tailBone1.write(135, 45, false);
       if(tailBone2Ctrl == true)
       {
       xAxisMov = 0;
@@ -252,56 +280,6 @@ void loop(){
       }
       tailBone2.write(xAxisMov, 50, true);
       tailBone2Ctrl = !tailBone2Ctrl;
-      /*
-      if((xAxisMov > 0) && (xAxisMov < 180))
-      {
-        if(tailBone2Ctrl == true)
-        {
-          xAxisMov = xAxisMov - 20;
-        }
-
-        if(tailBone2Ctrl == false)
-        {
-          xAxisMov = xAxisMov + 20;
-        }
-      }
-      else
-      {
-        if(xAxisMov == 0)
-        {
-          tailBone2Ctrl = false;
-          xAxisMov = 20;
-        }
-        if(xAxisMov == 180)
-        {
-          tailBone2Ctrl = true;
-          xAxisMov = 160;
-        }
-      }/*
-      
-      /*
-      Serial.println("< STATUS: STILL >");
-      
-      if((avgZ>=0.92)&&(avgZ<=1.10))
-      {
-        Serial.println("< STATUS: STANDING >");
-        tailBone1.write(90, 45, false);
-        tailBone2.write(0, 50, true);
-        tailBone2.write(180, 50, false);
-      }
-      if((avgZ>=0.55)&&(avgZ<=0.91))
-      {
-        tailBone2.write(90, 50, false);
-        tailBone1.write(135, 45, true);
-        Serial.println("< STATUS: SITTING >");
-        
-      }*/
-    }
-    
-    else
-    {
-      tailBone1.write(135, 45, false);
-      tailBone2.write(90, 50, true);
       Serial.println("< STATUS: MOVE >");
     }
   }
