@@ -6,8 +6,8 @@
 
 
 ADXL345 accel; //variable accel is an instance of the ADXL345 library
-int xAxisMov;
-int yAxisMov;
+int xAxisMov = 80;
+int yAxisMov = 90;
 
 VarSpeedServo tailBone1;
 VarSpeedServo tailBone2;
@@ -236,30 +236,61 @@ void loop(){
   if(heurXYZ==true)
   {
     if(
-      ((diffX>=-0.1)&&(diffX<=0.1))
-    &&((diffY>=-0.11)&&(diffY<=0.11))
+      ((diffX>=-0.05)&&(diffX<=0.05))
+    &&((diffY>=-0.05)&&(diffY<=0.05))
     &&((diffZ>=-0.05)&&(diffZ<=0.05))
     )
     {
+      tailBone1.write(90, 45, false);
+      tailBone2.write(xAxisMov, 50, false);
+      if((xAxisMov > 0) && (xAxisMov < 180))
+      {
+        if(tailBone2Ctrl == true)
+        {
+          xAxisMov = xAxisMov - 20;
+        }
+
+        if(tailBone2Ctrl == false)
+        {
+          xAxisMov = xAxisMov + 20;
+        }
+      }
+      else
+      {
+        if(xAxisMov == 0)
+        {
+          tailBone2Ctrl = false;
+          xAxisMov = 20;
+        }
+        if(xAxisMov == 180)
+        {
+          tailBone2Ctrl = true;
+          xAxisMov = 160;
+        }
+      }
+      /*
       Serial.println("< STATUS: STILL >");
       
-      if((avgZ>=0.79)&&(avgZ<=1.00))
+      if((avgZ>=0.92)&&(avgZ<=1.10))
       {
         Serial.println("< STATUS: STANDING >");
         tailBone1.write(90, 45, false);
         tailBone2.write(0, 50, true);
-        tailBone2.write(180, 50, true);
+        tailBone2.write(180, 50, false);
       }
-      if((avgZ>=0.55)&&(avgZ<=0.78))
+      if((avgZ>=0.55)&&(avgZ<=0.91))
       {
         tailBone2.write(90, 50, false);
         tailBone1.write(135, 45, true);
         Serial.println("< STATUS: SITTING >");
-      }
+        
+      }*/
     }
     
     else
     {
+      tailBone1.write(135, 45, true);
+      tailBone2.write(90, 50, true);
       Serial.println("< STATUS: MOVE >");
     }
   }
@@ -482,27 +513,7 @@ while (true)
   } 
   
   
-  //double tap
-  if(accel.triggered(interrupts, ADXL345_DOUBLE_TAP)){
-    Serial.println("+++++ DOUBLE TAP DETECTED  +++++");
-     //add code here to do when a 2X tap is sensed
-  }
-  
-  //tap
-  if(accel.triggered(interrupts, ADXL345_SINGLE_TAP)){
-    Serial.println("**** TAP DETECTED  *****");
-     //add code here to do when a tap is sensed
-  }
-/*
-  if(ax < 0) xAxisMov = 45;
-  if(ax > 0) xAxisMov = 135;
 
-  if(az < 1) yAxisMov = 45;
-  if(az > 1) yAxisMov = 135;
-
-  
-  tailBone1.write(yAxisMov);
-  tailBone2.write(xAxisMov);*/
   
  
 }
