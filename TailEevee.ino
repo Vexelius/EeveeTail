@@ -5,37 +5,45 @@
 #define SAMPLES 15
 
 
-ADXL345 accel; //variable accel is an instance of the ADXL345 library
-int xAxisMov = 80;
-int yAxisMov = 90;
+ADXL345 accel;      // Instance of the ADXL345 library
+int xAxisMov = 80;  // Controls the position of the second segment of the tail
+int yAxisMov = 90;  // Controls the position of the first segment of the tail
 
-VarSpeedServo tailBone1;
-VarSpeedServo tailBone2;
+VarSpeedServo tailBone1;  // Servo connected to pin 11 - Controls the first segment of the tail (Y axis)
+VarSpeedServo tailBone2;  // Servo connected to pin 10 - Controls the second segment of the tail (X axis)
 
+// These variables store the acceleration in each one of the axes
+// (Provided by the accelerometer module)
 double debugAx[7];
 double debugAy[7];
 double debugAz[7];
-double debugMinAx;
-double debugMinAy;
-double debugMinAz;
-double debugMaxAx;
-double debugMaxAy;
-double debugMaxAz;
+
+// Variables are used to generate the average values
+//Accumulators
 double accX = 0;
 double accY = 0;
 double accZ = 0;
+//Averages
 double avgX;
 double avgY;
 double avgZ;
+
+// Variables that hold the previous accelerometer values
 double prevX = 0;
 double prevY = 0;
 double prevZ = 0;
+// Variables that store the difference between the current and previous accelerometer values
 double diffX = 0;
 double diffY = 0;
 double diffZ = 0;
 
+// Switches to change the tail's direction
 boolean tailBone1Ctrl = true;  //True: Up     | False: Down     ::      Up = 135  | Down = 45
 boolean tailBone2Ctrl = true;  //True: Right  | False: Left     ::      Right = 0 | Left = 180
+
+// This switch is used to start the comparison algorithm,
+//because you need to generate at least one set of values in
+//order to start comparing.
 boolean heurXYZ = false;
 
 
@@ -149,11 +157,11 @@ void setup(){
   accel.setInterrupt( ADXL345_INT_INACTIVITY_BIT, 1);
 
 
-  delay(3000); //This will give you enough time to get ready
+  delay(2000); //This will give you enough time to get ready for the calibration routine
   calibrateOffsets();
 
 
-  // + Attach the servos for each bone segment
+  // Attach the servos for each bone segment
   delay(250);
   tailBone1.attach(11);
   tailBone2.attach(10);
@@ -282,230 +290,9 @@ void loop(){
       tailBone2Ctrl = !tailBone2Ctrl;
       Serial.println("< STATUS: MOVE >");
     }
-  }
-  /*
-  if(((avgX >= -0.12)&&(avgX <= -0.08))&&
-  ((avgY >= 0.9)&&(avgY <= 0.95))&&
-  ((avgZ >= 0.89)&&(avgZ <= 1.2)))
-  {
-    Serial.print("[ STATUS: STILL ] ::");
-    if(tailBone1Ctrl == true)
-      {
-      tailBone1.write(135, 25, false);
-      tailBone1Ctrl = !tailBone1Ctrl;
-      }
-    else
-      {
-      tailBone1.write(45, 25, false);
-      tailBone1Ctrl = !tailBone1Ctrl;
-      }
-    if(tailBone2Ctrl == true)
-      {
-      tailBone2.write(0, 50, false);
-      tailBone2Ctrl = !tailBone2Ctrl;
-      }
-    else
-      {
-      tailBone2.write(180, 50, false);
-      tailBone2Ctrl = !tailBone2Ctrl;
-      }
-  }
- 
-  if(((avgX >= -0.12)&&(avgX <= -0.06))&&
-  ((avgY >= 0.83)&&(avgY <= 0.91))&&
-  ((avgZ >= 0.65)&&(avgZ <= 0.83)))
-  {
-    Serial.print("[ STATUS: SITTING DOWN ] ::");
-    tailBone1.write(135, 50, false);
-    tailBone2.write(90, 50, false);
-  }*/
-
-
-  /*
-  //Then, get Min and Max values
-  //Identify the minimum value
-  debugMinAx = debugAx[0];
-  debugMinAy = debugAy[0];
-  debugMinAz = debugAz[0];
-
-  for (i = 1; i < 7; i++)
-  {
-  if(debugAx[i] < debugMinAx)
-  debugMinAx = debugAx[i];
-  if(debugAy[i] < debugMinAy)
-  debugMinAy = debugAy[i];
-  if(debugAz[i] < debugMinAz)
-  debugMinAz = debugAz[i];
-  }
-
-  //Identify the maximum value
-  debugMaxAx = debugAx[0];
-  debugMaxAy = debugAy[0];
-  debugMaxAz = debugAz[0];
-
-  for (i = 1; i < 7; i++)
-  {
-  if(debugAx[i] > debugMaxAx)
-  debugMaxAx = debugAx[i];
-  if(debugAy[i] > debugMaxAy)
-  debugMaxAy = debugAy[i];
-  if(debugAz[i] > debugMaxAz)
-  debugMaxAz = debugAz[i];
-  }
-
-  //Then, identify the movement
-  if(((debugMinAy >= 0.85)&&(debugMaxAy <= 0.95))&&
-  ((debugMinAz >= 0.75)&&(debugMaxAz <= 0.95)))
-  {
-    Serial.println("STATUS: STILL");
-  }
-  else
-    {
-    Serial.print("STATUS: NOT STILL! Min: ");
-    Serial.print(debugMinAz);
-    Serial.print(" Max: ");
-    Serial.println(debugMaxAz);
-  }
-  */
-
-  
-  /*
-  double xyz[3];
-  double ax,ay,az;
-  accel.getAcceleration(xyz);
-  ax = xyz[0];
-  ay = xyz[1];
-  az = xyz[2];
-  
-  Serial.print("X=");
-  Serial.print(ax);
-    Serial.println(" g");
-  Serial.print("Y=");
-  Serial.print(ay);
-    Serial.println(" g");
-  Serial.print("Z=");
-  Serial.print(az);
-    Serial.println(" g");
-  Serial.println("----------");
-  
-  
-  delay(500);
-  */
-
-  /*
-int i, j;
-Serial.println("The test will start in 3...");
-delay(1000);
-Serial.println("The test will start in 2...");
-delay(1000);
-Serial.println("The test will start in 1...");
-delay(1000);
-Serial.println("Test in process!");
-
-for (i = 0; i < 7; i++)
-{
-  double xyz[3];
-  accel.getAcceleration(xyz);
-  debugAx[i] = xyz[0];
-  debugAy[i] = xyz[1];
-  debugAz[i] = xyz[2];
-  delay(200);
-}
-
-Serial.println("Test finished. Showing data");
-for (j = 0; j < 7; j++)
-{
-  Serial.print("Sample #");
-  Serial.println(j);
-  Serial.print("X = ");
-  Serial.print(debugAx[j]);
-  Serial.print(" | ");
-  Serial.print("Y = ");
-  Serial.print(debugAy[j]);
-  Serial.print(" | ");
-  Serial.print("Z = ");
-  Serial.print(debugAz[j]);
-  Serial.println(" | ");
-}
-
-//Identify the minimum value
-debugMinAx = debugAx[0];
-debugMinAy = debugAy[0];
-debugMinAz = debugAz[0];
-
-for (i = 1; i < 7; i++)
-{
-  if(debugAx[i] < debugMinAx)
-  debugMinAx = debugAx[i];
-  if(debugAy[i] < debugMinAy)
-  debugMinAy = debugAy[i];
-  if(debugAz[i] < debugMinAz)
-  debugMinAz = debugAz[i];
-}
-Serial.println("*------------------*");
-Serial.print("Minimum value for X = ");
-Serial.println(debugMinAx);
-Serial.print("Minimum value for Y = ");
-Serial.println(debugMinAy);
-Serial.print("Minimum value for Z = ");
-Serial.println(debugMinAz);
-
-
-//Identify the maximum value
-debugMaxAx = debugAx[0];
-debugMaxAy = debugAy[0];
-debugMaxAz = debugAz[0];
-
-for (i = 1; i < 7; i++)
-{
-  if(debugAx[i] > debugMaxAx)
-  debugMaxAx = debugAx[i];
-  if(debugAy[i] > debugMaxAy)
-  debugMaxAy = debugAy[i];
-  if(debugAz[i] > debugMaxAz)
-  debugMaxAz = debugAz[i];
-}
-Serial.println("*------------------*");
-Serial.print("Maximum value for X = ");
-Serial.println(debugMaxAx);
-Serial.print("Maximum value for Y = ");
-Serial.println(debugMaxAy);
-Serial.print("Maximum value for Z = ");
-Serial.println(debugMaxAz);
-Serial.println("*------------------*");
-
-//Prompt to restart the test
-Serial.println("Press S to reStart the test");
-while (true)
-  {
-        if (Serial.available())
-        {
-            char inByte = Serial.read();
-            
-            if (inByte == 's' || inByte == 'S')
-                break;
-        }
-    }
-
-*/
-  //Fun Stuff!    
-  //read interrupts source and look for triggerd actions
-  
-  //getInterruptSource clears all triggered actions after returning value
-  //so do not call again until you need to recheck for triggered actions
-   byte interrupts = accel.getInterruptSource();
-  
-  // freefall
-  if(accel.triggered(interrupts, ADXL345_FREE_FALL)){
-    Serial.println("freefall");
-    //add code here to do when freefall is sensed
   } 
-  
-  
-
-  
- 
 }
+
 
 void calibrateOffsets()
 {
