@@ -250,8 +250,13 @@ void loop(){
     )
     {
       Serial.println("< STATUS: STILL >");
-
       
+      if(avgZ>=1.11)
+      {
+        Serial.println("< STATUS: STAND UP >");
+        tailBone1.write(90, 45, false);
+        tailBone2.write(90, 50, true);
+      }
       if((avgZ>=0.92)&&(avgZ<=1.10))
       {
         Serial.println("< STATUS: STANDING >");
@@ -267,7 +272,7 @@ void loop(){
         tailBone2.write(xAxisMov, 50, true);
         tailBone2Ctrl = !tailBone2Ctrl;
       }
-      if((avgZ>=0.55)&&(avgZ<=0.91))
+      if(avgZ<=0.91)
       {
         Serial.println("< STATUS: SITTING >");
         tailBone1.write(135, 45, false);
